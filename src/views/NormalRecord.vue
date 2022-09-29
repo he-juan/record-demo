@@ -307,7 +307,6 @@
                     config.onMediaStopped();
                   });
 
-                  setVideoURL(screenStream, true);
                 }).catch(function(error) {
                   config.onMediaCapturingFailed(error);
                 });
@@ -350,11 +349,19 @@
                   This.captureUserMedia({audio:true},function(mic){
                     This.audio = mic
                     // screenStream.addTrack(mic.getTracks()[0]);
+                    let stream
                     let mixStream = []
-                    let audioTrack = This.mixingStream(screenStream, This.audio).getAudioTracks()[0]
-                    mixStream.push(audioTrack)
-                    mixStream.push(screenStream.getVideoTracks()[0])
-                    let stream = new MediaStream(mixStream)
+                    if(screenStream.getAudioTracks().length > 0){
+
+                      let audioTrack = This.mixingStream(screenStream, This.audio).getAudioTracks()[0]
+                      mixStream.push(audioTrack)
+                      mixStream.push(screenStream.getVideoTracks()[0])
+                      stream = new MediaStream(mixStream)
+                    }else{
+                      mixStream.push(This.audio.getAudioTracks()[0])
+                      mixStream.push(screenStream.getVideoTracks()[0])
+                      stream = new MediaStream(mixStream)
+                    }
                     config.onMediaCaptured(stream);
                     This.addStreamStopListener(screenStream, function() {
                       config.onMediaStopped();
@@ -378,11 +385,19 @@
                   This.captureUserMedia({audio:true},function(mic){
                     This.audio = mic
                     // screenStream.addTrack(mic.getTracks()[0]);
+                    let stream
                     let mixStream = []
-                    let audioTrack = This.mixingStream(screenStream, This.audio).getAudioTracks()[0]
-                    mixStream.push(audioTrack)
-                    mixStream.push(screenStream.getVideoTracks()[0])
-                    let stream = new MediaStream(mixStream)
+                    if(screenStream.getAudioTracks().length > 0){
+
+                      let audioTrack = This.mixingStream(screenStream, This.audio).getAudioTracks()[0]
+                      mixStream.push(audioTrack)
+                      mixStream.push(screenStream.getVideoTracks()[0])
+                      stream = new MediaStream(mixStream)
+                    }else{
+                      mixStream.push(This.audio.getAudioTracks()[0])
+                      mixStream.push(screenStream.getVideoTracks()[0])
+                      stream = new MediaStream(mixStream)
+                    }
                     config.onMediaCaptured(stream);
                     This.addStreamStopListener(screenStream, function() {
                       config.onMediaStopped();
@@ -564,8 +579,9 @@
           This.video.src = This.video.srcObject = null
           This.video.src = This.url
           This.video.play()
-          This.video.controls = true;
           This.video.muted = false
+          // This.video.controls = true;
+
 
           This.recorder.destroy()
           This.recorder = null
