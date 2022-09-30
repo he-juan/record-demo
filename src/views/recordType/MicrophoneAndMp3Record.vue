@@ -34,7 +34,6 @@
             This.startRecording()
           })
           Bus.$on("isMute",(data)=>{
-            console.warn("data:",data)
             This.isMute = data.value
             if(This.audioStream){
               This.streamMuteSwitch({stream: This.audioStream, type: 'audio', mute: This.isMute})
@@ -55,6 +54,7 @@
               This.recorder.stopRecording(This.stopRecordingCallback)
               return
             }
+            This.$refs.downLoadBtn.style.display = "none"
             This.getMp3Stream(function(mp3Stream) {
               This.mp3Stream = mp3Stream
               let constraints = {
@@ -94,7 +94,6 @@
                   setTimeout(looper, 1000);
                 })();
 
-                console.warn("StereoAudioRecorder:",StereoAudioRecorder)
                 This.recorder = RecordRTC(mixer.getMixedStream(), {
                   // recorderType: StereoAudioRecorder
                   mimeType: 'audio/webm',
@@ -216,16 +215,12 @@
             logTime = beautyDate(logTime)
             let fileName = 'recorder_'+ logTime +'.webm'
             let file = new File([this.file], fileName, { type: 'video/webm'});
-            console.warn("file:",file)
-            console.warn("url:",this.url)
             window.open(URL.createObjectURL(file));
           },
         },
         beforeDestroy(){
           Bus.$off('microphoneMp3Recording')
           Bus.$off("isMute")
-          this.mixStreamContext.close()
-          this.mixStreamContext = null
         }
     }
 </script>

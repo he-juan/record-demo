@@ -63,18 +63,15 @@
            this.startRecordingBtn.innerHTML = data.value
          })
          Bus.$on("recordingValue", (data)=>{
-           console.warn("data:",data)
            this.startRecordingBtn.innerHTML = data.value
          })
          Bus.$on("gifRecordingValue", (data)=>{
            this.startRecordingBtn.innerHTML = data.value
          })
          Bus.$on("startRecordingMp3",(data)=>{
-           console.warn("data:",data)
            this.startRecordingBtn.innerHTML = data.value
          })
          Bus.$on("isDisplayBtn", (data)=>{
-           console.warn("isDisplayBtn data:",data)
            if(data.value){
              this.shareScreenBtn.style.display = 'block'
            }else{
@@ -85,10 +82,8 @@
        methods:{
          getAdavncedRecordMedia(){
            this.currentRecordType = this.$store.state.currentRecordMethod === 'advanced-Recorded' ? this.$refs.advancedRecordMedia.value : null
-           console.warn("this.currentRecordType:",this.currentRecordType)
          },
          handleRecord(){
-           console.warn(" handleRecord handleRecord handleRecord handleRecord handleRecord")
            if(this.currentRecordType === 'record-regionalScreen'){
              Bus.$emit("startRecordingScreen", {isRecording: true, element: this.startRecordingBtn, value: this.startRecordingBtn.innerHTML })
            }else if(this.currentRecordType === 'record-camera-plus-screen'){
@@ -100,7 +95,6 @@
            }
          },
          handleShareStream(){
-           console.warn("this.shareScreenBtn.innerHTML：",this.shareScreenBtn.innerHTML)
            Bus.$emit("shareScreen", {isShare: true, element: this.shareScreenBtn , value: this.shareScreenBtn.innerHTML })
          },
        },

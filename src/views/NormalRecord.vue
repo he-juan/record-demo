@@ -116,15 +116,9 @@
           this.$nextTick(function () {
             this.video = this.$refs.recorderVideo
             this.audio = this.$refs.recorderAudio
-            console.warn("video:", this.video)
             this.currentRecordType = this.$store.state.currentRecordMethod === 'normal-Recorded' ? this.normalRecordingMedia[0].value : this.advancedRecordingMedia[0].value
             this.currentResolutions = this.mediaResolutions[0].value
             this.currentFramerates = this.mediaFramerates[0].value
-
-            console.warn("this.$store.state.currentRecordMethod:", this.$store.state.currentRecordMethod)
-            console.warn("this.currentRecordType:", this.currentRecordType)
-            console.warn("currentRecordMethod_currentRecordMethod::", this.$store.state.currentRecordMethod)
-            console.warn("getter:", this.$store.state.currentRecordMethod)
           })
         },
         methods: {
@@ -156,6 +150,7 @@
 
           if(!event) return;
           This.button.disabled = true;
+          This.$refs.downLoadBtn.style.display = "none"
           This.button.mediaCapturedCallback = function() {
             console.warn(" button.mediaCapturedCallback  button.mediaCapturedCallback  button.mediaCapturedCallback ")
             let options = {
@@ -164,7 +159,6 @@
               type: 'video',
             };
 
-            console.warn("options:",options)
             This.recorder = RecordRTC(This.button.stream, options);
 
             This.recorder.startRecording()
@@ -199,15 +193,14 @@
                   This.video.play()
                 }
                 This.video.onloadedmetadata = async function () {
-                  console.warn("onloadedmetadata onloadedmetadata onloadedmetadata onloadedmetadata")
                   await This.video.play()
                   This.video.muted = true
                   if(width && (width.max > 1280 ||width.exact > 1280)){
-                    This.video.style.width = This.video.videoWidth / 3 + 'px'
-                    This.video.style.height = This.video.videoHeight / 3 + 'px'
+                    This.video.style.width = width &&(width.max ||width.exact) / 3 + 'px'
+                    This.video.style.height = height && (height.max || width.exact) / 3 + 'px'
                   }else if(width && (width.max === 1280 || width.exact === 1280)){
-                    This.video.style.width = This.video.videoWidth / 2 + 'px'
-                    This.video.style.height = This.video.videoHeight / 2 + 'px'
+                    This.video.style.width = width &&(width.max ||width.exact) / 2 + 'px'
+                    This.video.style.height = height && (height.max || width.exact) / 2 + 'px'
                   }else{
                     This.video.style.width = (width.max || width.exact) + 'px'
                     This.video.style.height = (height.max || height.exact) + 'px'
@@ -254,9 +247,7 @@
           if(This.currentRecordType === 'record-audio-plus-video'){
             captureAudioPlusVideo(commonConfig)
             function captureAudioPlusVideo(config) {
-              console.warn("config:",config)
               This.captureUserMedia({video: true, audio: true}, function(audioVideoStream) {
-                console.warn("audioVideoStream:",audioVideoStream)
 
                 config.onMediaCaptured(audioVideoStream);
 
@@ -307,6 +298,7 @@
                     config.onMediaStopped();
                   });
 
+                  setVideoURL(screenStream, true);
                 }).catch(function(error) {
                   config.onMediaCapturingFailed(error);
                 });
@@ -385,6 +377,7 @@
                   This.captureUserMedia({audio:true},function(mic){
                     This.audio = mic
                     // screenStream.addTrack(mic.getTracks()[0]);
+
                     let stream
                     let mixStream = []
                     if(screenStream.getAudioTracks().length > 0){
@@ -421,16 +414,13 @@
         // 获取当前录制类型
         getNormalRecordMedia(){
           this.currentRecordType = this.$store.state.currentRecordMethod === 'normal-Recorded' ? this.$refs.normalRecordMedia.value : null
-          console.warn("this.currentRecordType:",this.currentRecordType)
         },
         // 获取当前的录制类型的流
         getNormalMediaResolution(){
           this.currentResolutions = this.$store.state.currentRecordMethod === 'normal-Recorded' ? this.$refs.normalMediaResolutions.value : null
-          console.warn("this.currentResolutions:",this.currentResolutions)
         },
         getNormalMediaFramerates(){
           this.currentFramerates = this.$store.state.currentRecordMethod === 'normal-Recorded' ? this.$refs.normalMediaFramerates.value : null
-          console.warn("this.currentFramerates:",this.currentFramerates)
         },
         handleRecord(){
           this.init()
@@ -503,7 +493,6 @@
           }
 
           if(!mediaConstraints.video.width || !mediaConstraints.video.height) {
-            console.warn("mandatory mandatory mandatory mandatory")
             mediaConstraints.video.width = {};
             mediaConstraints.video.height = {};
             let camereDeviceId = this.$store.getters.getCurrentVideoSource
@@ -512,12 +501,9 @@
             }
           }
 
-
           let value = this.currentResolutions
-          console.warn("value:",value)
 
           if(value == 'Default' || value == 'default' ) {
-            console.warn("default default default ")
             defaultWidth = 640
             defaultHeight = 360
           }else{
@@ -578,10 +564,12 @@
 
           This.video.src = This.video.srcObject = null
           This.video.src = This.url
-          This.video.play()
           This.video.muted = false
-          // This.video.controls = true;
+          This.video.controls = true;
+          This.video.play()
 
+          // This.video.controls = true;
+          // This.video.muted = false
 
           This.recorder.destroy()
           This.recorder = null

@@ -8,7 +8,7 @@
       </div>
       <div class="mutistreamContent" >
         <!--<video class="mutistreamVideo" ref="mutistreamVideo" style="width: 100%;"></video>-->
-        <video class="mutistreamVideo" ref="mutistreamVideo" width="720"  style="transform: scale(1)"></video>
+        <video class="mutistreamVideo" ref="mutistreamVideo" width="640"  style="transform: scale(1)"></video>
       </div>
     </div>
   </div>
@@ -60,8 +60,6 @@
         methods:{
           startRecording(){
              let This = this
-            console.warn("This.button.value:",This.button.value)
-             // if(This.button.innerHTML === 'stop Recording'){
             if(This.button.value === 'Stop Recording'){
                This.button.disabled = true;
                This.button.disableStateWaiting = true;
@@ -76,6 +74,7 @@
                return
              }
 
+            This.$refs.downLoadBtn.style.display = "none"
              This.captureScreen(function(screen) {
                This.screen = screen
 
@@ -249,8 +248,6 @@
             logTime = beautyDate(logTime)
             let fileName = 'recorder_'+ logTime +'.webm'
             let file = new File([this.file], fileName, { type: 'video/webm'});
-            console.warn("file:",file)
-            console.warn("url:",this.url)
             window.open(URL.createObjectURL(file));
           },
           streamMuteSwitch(data) {

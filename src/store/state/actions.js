@@ -26,7 +26,6 @@ export default{
      await context.commit("setCurrentRecordMethod",{content: data.content})
    },
    async modifyMuteState(context,data){
-      console.warn("data:",data)
       await context.commit("setMuteState",{context:data.content})
       Bus.$emit("isMute",{value:data.content})
    }

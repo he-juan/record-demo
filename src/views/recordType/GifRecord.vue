@@ -24,7 +24,6 @@
           this.text = this.$refs.text
           this.image = this.$refs.img
           Bus.$on('gifRecording',(data)=>{
-            console.warn("data:",data)
             this.button = data.element
             this.button.value = data.value
             this.startRecording()
@@ -44,6 +43,7 @@
               This.recorder.stopRecording(This.stopRecordingCallback)
               return
              }
+            This.$refs.downLoadBtn.style.display = "none"
             This.captureCamera(function(camera) {
               Bus.$emit("gifRecordingValue", {isRecording: true, value: 'Stop Recording'})
               This.text.innerHTML = 'Waiting for Gif Recorder to start...';
@@ -63,10 +63,8 @@
 
               This.recorder.startRecording();
 
-              // release camera on stopRecording
               This.recorder.camera = camera;
 
-              // document.getElementById('btn-stop-recording').disabled = false;
             });
           },
           captureCamera(callback) {

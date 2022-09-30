@@ -15,47 +15,25 @@
         </div>
       </div>
 
-      <div class="screenContrainter2">
+      <div class="screenContrainter2" ref="canvasWrapper" >
         <div class="shareScreenContentWrapper">
           <div class="shareScreenContent2" >
             <canvas class="shareScreenCanvas"  ref="showScreenCanvas" width="1920" height="1080" style="transform: scale(1);"></canvas>
           </div>
         </div>
-        <!--<div class="recordBtnWrapper">-->
-          <!--<div class="recordBtn">-->
-            <!--&lt;!&ndash;<button @click="startRecording()">开始录制</button>&ndash;&gt;-->
-            <!--&lt;!&ndash;&lt;!&ndash;&lt;!&ndash;<button @click="start_Record()">暂停录制</button>&ndash;&gt;&ndash;&gt;&ndash;&gt;-->
-            <!--&lt;!&ndash;&lt;!&ndash;&lt;!&ndash;<button @click="start_Record()">恢复录制</button>&ndash;&gt;&ndash;&gt;&ndash;&gt;-->
-            <!--&lt;!&ndash;<button @click="stopRecording()">停止录制</button>&ndash;&gt;-->
-            <!--&lt;!&ndash;&lt;!&ndash;<button @click="videoDownload()">下载视频</button>&ndash;&gt;&ndash;&gt;-->
-          <!--</div>-->
-        <!--</div>-->
       </div>
 
-      <div class="screenContrainter3">
-        <!--<div class="shareScreenContentWrapper">-->
-          <div class="recordBtn">
+      <div class="screenContrainter3" ref="recordWrapper">
+        <div class="shareScreenContentWrapper2">
+          <div class="recordBtn" style="text-align: center; display:none;" ref="downLoadBtn">
             <button @click="download()">下载视频</button>
             <button @click="openNewTab()">open new tab</button>
           </div>
-          <div class="shareScreenContent2" >
+          <div class="shareScreenContentWrapper3" >
             <video  class="shareScreenRecord"  ref="shareScreenRecord" width="1920" height="1080" style="transform: scale(1);" ></video>
           </div>
         </div>
-        <!--<div class="recordBtnWrapper">-->
-          <!--<div class="recordBtn">-->
-            <!--<button @click="download()">下载视频</button>-->
-            <!--<button @click="openNewTab()">open new tab</button>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-
-      <!--<div class="screenContrainter">-->
-      <!--<div class="shareScreenContent" >-->
-      <!--<video  class="shareScreenRecord"  ref="shareScreenRecord" width="1920" height="1080" style="transform: scale(1); " ></video>-->
-      <!--</div>-->
-      <!--</div>-->
-
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +49,7 @@
         // showShareScreen: false,   // 是否显示演示流
         timer:'',
         isOpenShareScreen: false,       // 是否开启演示
+        shareScreenStream: null,        // 演示流
 
       }
     },
@@ -87,20 +66,22 @@
       }
       this.localVideo = this.$refs.showScreenLocalVideo
       this.canvas = this.$refs.showScreenCanvas;
+      this.canvasWrapper = this.$refs.canvasWrapper;
+      this.recordWrapper = this.$refs.recordWrapper
+      this.recordWrapper.style.display = "none"
+
       this.ctx = this.canvas.getContext("2d");
       this.recordVideo = this.$refs.shareScreenRecord
       this.isMute = this.$store.getters.getMuteState
 
       this.$nextTick(()=>{
         Bus.$on("shareScreen",(data)=>{
-          console.warn("shareScreen:",data)
           this.shareScreenBtn = data.element
           this.shareScreenBtn.value = data.value
           this.getDisplayMedia()
         })
 
         Bus.$on("isMute",(data)=>{
-          console.warn("data111:",data)
           this.isMute = data.value
           if(this.audioStream){
             this.streamMuteSwitch({stream: this.audioStream, type: 'audio', mute:this.isMute})
@@ -109,7 +90,6 @@
 
       })
       Bus.$on("startRecordingScreen",(data)=>{
-        console.warn("data:",data)
         this.recordingBtn = data.element
         this.recordingBtn.value = data.value
         this.startRecording()
@@ -136,12 +116,6 @@
             if(this.isMute){
               this.streamMuteSwitch({stream: this.audioStream, type: 'audio', mute:this.isMute})
             }
-            // this.myVideo.srcObject = stream
-            // this.localStream = stream
-            // this.localStream = this.myVideo.captureStream()
-            // let isMute = this.isMuteElement.value === '是' ? true : false ;
-            // this.streamMuteSwitch({stream: stream, type: 'audio', mute: isMute})
-            // this.$store.commit({type: 'setAudioStream', content: stream})
             console.log('Received local audio stream')
           } catch (error) {
             console.log(`getUserMedia error: ${error}`)
@@ -178,6 +152,8 @@
               canvas.style.width = video.videoWidth / 3 + 'px'
               canvas.style.height = video.videoHeight / 3 + 'px'
             }
+            This.canvasWrapper.style.display = "block"
+            This.recordWrapper.style.display = "none"
             if(This.shareScreenStream){
               Bus.$emit("isDisplayBtn",{value: false})
             }
@@ -195,6 +171,12 @@
 
                 This.shareScreenStream = null
                 This.audioStream = null
+                This.localVideo.srcObject = null
+
+                if(document.getElementById("mask") ){
+                  document.getElementById("mask").remove()
+                }
+                This.ctx.clearRect(0,0, This.canvas.width,This.canvas.height)
                 Bus.$emit("isDisplayBtn",{value: true})
               }
             });
@@ -222,9 +204,9 @@
             if(This.shareScreenStream){
               Bus.$emit("isDisplayBtn",{value: false})
             }
-
+            This.canvasWrapper.style.display = "block"
+            This.recordWrapper.style.display = "none"
             This.addStreamStopListener(stream, function() {
-              console.warn("111 addStreamStopListener addStreamStopListener")
               if(This.recorder){
                 This.recorder.stopRecording(This.stopRecordingCallback)
               }else{
@@ -238,6 +220,12 @@
 
                 This.shareScreenStream = null
                 This.audioStream = null
+                This.localVideo.srcObject = null
+
+                if(document.getElementById("mask") ){
+                  document.getElementById("mask").remove()
+                }
+                This.ctx.clearRect(0,0, This.canvas.width,This.canvas.height)
                 Bus.$emit("isDisplayBtn",{value: true})
               }
             });
@@ -262,7 +250,6 @@
         let startY = ev.clientY - video.getBoundingClientRect().top ;
         startX = startX * 3;
         startY = startY * 3;
-        console.warn("startX:",startX + " * " +startY)
 
         This.startX = startX
         This.startY = startY
@@ -275,7 +262,6 @@
         oDiv.style.cssText="width: 0; height: 0; background: lightblue; opacity: 0.4; position: absolute; z-index:999";
 
         video.onmousemove = function (ev) {
-          console.warn("222")
           ev = window.event || ev;
 
           var x2 = ev.clientX  - container.offsetLeft;
@@ -310,9 +296,13 @@
         /**在canvas中绘制区域大小**/
         // startDraw(video, canvas, ctx, startX , startY, rangeW, rangeH)
 
+        This.canvasWrapper.style.display = "block"
+        This.recordWrapper.style.display = "none"
+
         // /************切换页面时获取流******************/
         video.ontimeupdate = function(){
           console.warn("draw draw draw draw")
+
           startDraw(video, canvas, This.ctx, This.startX , This.startY, rangeW, rangeH)
         }
         function startDraw(video, canvas, ctx, startX, startY, rangeW, rangeH){
@@ -329,7 +319,6 @@
             }
           })
         }
-
       },
       mixingStream (stream1, stream2) {
         console.info('mixing audio stream')
@@ -371,9 +360,12 @@
           return
         }
         if(This.recordingBtn.value === "Stop Recording"){
-           This.stopRecording()
+          This.stopRecording()
           return
         }else{
+          This.canvasWrapper.style.display = "none"
+          This.recordWrapper.style.display = "block"
+          This.$refs.downLoadBtn.style.display = "none"
           let screen = This.canvas.captureStream(60)
           let mask = document.getElementById("mask")
           This.recordVideo.style.width = mask.offsetWidth + 'px'
@@ -403,6 +395,7 @@
 
       },
       stopRecordingCallback() {
+        this.$refs.downLoadBtn.style.display = "block"
         this.recordVideo.src = null
         this.recordVideo.srcObject = null
         this.file = this.recorder.getBlob()
@@ -412,6 +405,8 @@
         this.recordVideo.play()
         this.recordVideo.controls = true;
         this.recordVideo.muted = false
+
+        this.localVideo.srcObject =  this.localVideo.src = null
 
         if(this.timer){
           console.warn("this.timer this.timer this.timer this.timer this.timer")
@@ -592,7 +587,11 @@
   }
 
   /*.videoContent{*/
-  /**/
+    /*!*width: 100%;*!*/
+    /*!*height: 100%;*!*/
+    /*display:flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
   /*}*/
 
   .screenContrainter{
@@ -625,7 +624,7 @@
     height:400px;
     display:flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     margin-bottom: 5px;
     border-radius: 10px;
@@ -644,11 +643,11 @@
   }
   .shareScreenContentWrapper{
     width:100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
   }
 
   .shareScreenContent2{
@@ -658,41 +657,35 @@
     display:flex;
     justify-content: center;
     align-items: center;
-    /*position: relative;*/
-
   }
-  /*.recordBtnWrapper{*/
-    /*width:10%;*/
-    /*height:360px;*/
-    /*display:flex;*/
-    /*justify-content: center;*/
-    /*align-items: center;*/
-  /*}*/
+  .shareScreenContentWrapper2{
+    width:100%;
+    height:100%;
+    overflow: hidden;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .shareScreenContentWrapper3{
+    width:100%;
+    height:100%;
+    overflow: hidden;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   .recordBtn{
     width:100%;
     height:100px;
-    /*position:relative;*/
-    /*right:0;*/
-    /*top:0;*/
     display:flex;
     flex-direction: row;
-    justify-content:space-around;
+    justify-content:center;
     align-items: center;
   }
 
-  /*.recordBtn button {*/
-    /*width: 90px;*/
-    /*height: 50px;*/
-    /*background-color: #8c818a;*/
-    /*color: white;*/
-    /*margin: 8px 5px;*/
-    /*padding: 3px;*/
-    /*border: 0;*/
-    /*border-radius: 8px;*/
-    /*transition: all 200ms;*/
-    /*font-size: small;*/
-  /*}*/
 
   .shareScreenContent .shareScreenCanvas, .shareScreenRecord{
     /*border: 1px solid #ccc;*/
