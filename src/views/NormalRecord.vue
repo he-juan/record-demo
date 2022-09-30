@@ -495,23 +495,24 @@
             return mediaConstraints;
           }
 
-          let camereDeviceId = this.$store.getters.getCurrentVideoSource
-          mediaConstraints.video.deviceId = {
-            exact: camereDeviceId  ,
+          if(!mediaConstraints.video.width || !mediaConstraints.video.height) {
+            mediaConstraints.video.width = {};
+            mediaConstraints.video.height = {};
+            let camereDeviceId = this.$store.getters.getCurrentVideoSource
+            mediaConstraints.video.deviceId = {
+              exact: camereDeviceId  ,
+            }
           }
 
           let value = this.currentResolutions
+
           if(value == 'Default' || value == 'default' ) {
-            return mediaConstraints;
+            defaultWidth = 640
+            defaultHeight = 360
           }else{
             value = value.split('x');
             defaultWidth = parseInt(value[0]);
             defaultHeight = parseInt(value[1]);
-          }
-
-          if(!mediaConstraints.video.width || !mediaConstraints.video.height) {
-            mediaConstraints.video.width = {};
-            mediaConstraints.video.height = {};
           }
 
           var isScreen = this.currentRecordType.toString().toLowerCase().indexOf('screen') != -1;
