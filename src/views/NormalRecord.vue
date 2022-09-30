@@ -197,13 +197,16 @@
                   This.video.muted = true
                   if(width && (width.max > 1280 ||width.exact > 1280)){
                     This.video.style.width = width &&(width.max ||width.exact) / 3 + 'px'
-                    This.video.style.height = height && (height.max || width.exact) / 3 + 'px'
+                    This.video.style.height = height && (height.max || height.exact) / 3 + 'px'
                   }else if(width && (width.max === 1280 || width.exact === 1280)){
                     This.video.style.width = width &&(width.max ||width.exact) / 2 + 'px'
-                    This.video.style.height = height && (height.max || width.exact) / 2 + 'px'
-                  }else{
+                    This.video.style.height = height && (height.max || height.exact) / 2 + 'px'
+                  }else if(width && (width.max === 640 || width.exact === 640)){
                     This.video.style.width = (width.max || width.exact) + 'px'
                     This.video.style.height = (height.max || height.exact) + 'px'
+                  }else{
+                    This.video.style.width =  '640px'
+                    This.video.style.height = '360px'
                   }
                 }
               }
@@ -492,26 +495,24 @@
             return mediaConstraints;
           }
 
-          if(!mediaConstraints.video.width || !mediaConstraints.video.height) {
-            mediaConstraints.video.width = {};
-            mediaConstraints.video.height = {};
-            let camereDeviceId = this.$store.getters.getCurrentVideoSource
-            mediaConstraints.video.deviceId = {
-              exact: camereDeviceId  ,
-            }
+          let camereDeviceId = this.$store.getters.getCurrentVideoSource
+          mediaConstraints.video.deviceId = {
+            exact: camereDeviceId  ,
           }
 
           let value = this.currentResolutions
-
           if(value == 'Default' || value == 'default' ) {
-            defaultWidth = 640
-            defaultHeight = 360
+            return mediaConstraints;
           }else{
             value = value.split('x');
             defaultWidth = parseInt(value[0]);
             defaultHeight = parseInt(value[1]);
           }
 
+          if(!mediaConstraints.video.width || !mediaConstraints.video.height) {
+            mediaConstraints.video.width = {};
+            mediaConstraints.video.height = {};
+          }
 
           var isScreen = this.currentRecordType.toString().toLowerCase().indexOf('screen') != -1;
 

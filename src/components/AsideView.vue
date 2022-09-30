@@ -63,9 +63,7 @@
       }
     },
     async created() {
-      this.getDevices()
-      // await this.getUserMediaOfAudio()
-      // await this.getAudioVideo()
+      await this.getDevices()
     },
 
     mounted() {
@@ -76,7 +74,7 @@
       this.recordMethod = this.$refs.recordMethod
       this.currentRecordMethod = this.recordMethodOption[0].value
       this.$store.commit({type: 'setCurrentRecordMethod', content: this.currentRecordMethod})
-
+      // this.getDevices()
     },
     methods: {
       handleOpen(key, keyPath) {
@@ -86,13 +84,13 @@
         console.log(key, keyPath);
       },
       // 获取设备信息
-      getDevices() {
+      async getDevices() {
         let This = this
         if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
           console.log('不支持获取设备信息！')
         } else {
           navigator.mediaDevices.enumerateDevices()
-            .then(this.showDevice)
+            .then(This.showDevice)
             .catch((err) => {
               console.log(err.name + ':' + err.message)
             })
@@ -105,10 +103,10 @@
         const This = this
         deviceInfos.forEach(function (deviceinfo) {
           var option = {
-            text: deviceinfo.label,
+            text: deviceinfo.label || deviceinfo.deviceId,
             value: deviceinfo.deviceId
           }
-          // console.log(deviceinfo);
+          console.log(deviceinfo);
           if (deviceinfo.deviceId !== 'default' && deviceinfo.deviceId !== 'communications') {
             if (deviceinfo.kind === 'audioinput') {
               This.audioSourceOption.push(option)
@@ -120,17 +118,28 @@
           }
         })
 
-        This.currentAudioSource = This.audioSourceOption[0].value
-        This.currentAudioutput = This.audioOutputOption[0].value
-        This.currentVideoSource = This.videoSourceOption[0].value
+        console.warn("This.audioSourceOption:", This.audioSourceOption)
+        if(This.audioSourceOption.length && This.audioSourceOption[0].value){
+          This.currentAudioSource = This.audioSourceOption[0].value
+          This.$store.commit({type: 'setCurrentAudioSource', content: This.currentAudioSource})
+        }
+        if(This.audioOutputOption.length && This.audioOutputOption[0].value){
+          This.currentAudioutput = This.audioOutputOption[0].value
+          This.$store.commit({type: 'setCurrentAudioOutput', content: This.currentAudioutput})
+        }
+        if(This.videoSourceOption.length && This.videoSourceOption[0].value){
+          This.currentVideoSource = This.videoSourceOption[0].value
+          This.$store.commit({type: 'setCurrentVideoSource', content: This.currentVideoSource})
+        }
 
+        // This.currentAudioSource = This.audioSourceOption[0].value
+        // This.currentAudioutput = This.audioOutputOption[0].value
+        // This.currentVideoSource = This.videoSourceOption[0].value
+        // This.$store.commit({type: 'setCurrentAudioSource', content: This.currentAudioSource})
+        // This.$store.commit({type: 'setCurrentAudioOutput', content: This.currentAudioutput})
+        // This.$store.commit({type: 'setCurrentVideoSource', content: This.currentVideoSource})
 
-        // console.warn("This.videoSourceOption:", This.videoSourceOption)
-        This.$store.commit({type: 'setCurrentAudioSource', content: This.currentAudioSource})
-        This.$store.commit({type: 'setCurrentAudioOutput', content: This.currentAudioutput})
-        This.$store.commit({type: 'setCurrentVideoSource', content: This.currentVideoSource})
-        this.$store.commit({type: 'setMuteState', content: This.isMuteElement.value === '是' ? true : false })
-        // This.getUserMediaOfAudio()
+        This.$store.commit({type: 'setMuteState', content: This.isMuteElement.value === '是' ? true : false })
         console.warn("This.$store:",This.$store)
       },
       // 获取当前麦克风输入设备
