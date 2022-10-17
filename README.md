@@ -61,9 +61,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
  
  
 ## 一、关于录制的基本逻辑
-  1. 录制功能: 安装recrdRTC来处理的.
+  1. 录制功能: 安装recordRTC来处理的.
   
-     > npm install recrdrtc
+     > npm install recordrtc
  
   2. 选择设备：
      - 采用store来管理状态、共享数据以及在各个组件之间进行共享数据。并且针对store的每个状态做了对应的处理。
