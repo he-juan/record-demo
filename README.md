@@ -25,7 +25,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 
 
-## 重点：关于此demo的相关功能
+
+
+## **重点：关于此demo的相关功能**
   1. demo功能主要分为两类：标准录制和高级录制。
   2. 标准录制主要有：麦克风录制、音频+视频录制、共享录制、音频+共享录制；
   3. 高级录制主要有：音频+视频+共享录制、区域共享录制、音频+MP3录制、视频gif录制。
@@ -35,10 +37,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
  ----------
  
  
-## 重点：框架逻辑
+## **重点：框架逻辑**
   1. 在 components 文件夹中的组件是webUI的相关处理流程。
     
-     ** components 文件下对应组件**
+     **components 文件下对应组件**
      
      - HomePage： webUI的页面显示处理流程。
      - AsideView：左边页面选择逻辑。
@@ -60,7 +62,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
  ----------
  
  
-## 一、关于录制的基本逻辑
+## **一、关于录制的基本逻辑**
   1. 录制功能: 安装recordRTC来处理的.
   
      > npm install recordrtc
@@ -89,9 +91,9 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
         URL.createObjectURL(recorder.getBlob()) // 表示获取后的内容可以直接访问查看
 ```
  
-## 二、 关于标准录制的处理逻辑
+## **二、 关于标准录制的处理逻辑**
  
- 1. 针对标准录制的功能：`麦克风录制、音频+视频录制、共享录制、音频+共享录制`
+ 1. 针对标准录制的功能：**`麦克风录制、音频+视频录制、共享录制、音频+共享录制`**
  2. 标准录制功能都在`NormalRecord` 组件中：
     - 针对视频：可以设置对应的取流参数；像素可选择的有360p、480p、720p、1080p。
     
@@ -113,8 +115,8 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
  -----------------
  
 ## 三、关于高级录制的处理逻辑
- 1. 针对高级录制的功能有：`音频+视频+共享录制、区域共享录制、音频+MP3录制、视频gif录制`
- 2. 关于`音频+MP3`的处理逻辑：
+ 1. 针对高级录制的功能有：**`音频+视频+共享录制、区域共享录制、音频+MP3录制、视频gif录制`**
+ 2. 关于**`音频+MP3`**的处理逻辑：
     - 安装 `multistreamsmixer` : npm install multistreamsmixer
     - 使用：
    
@@ -142,3 +144,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
         
      - 首先共享界面，然后对共享界面截取区域后，点击录制操作后就可以录制。
       
+  
+  
+  -----
+ 
